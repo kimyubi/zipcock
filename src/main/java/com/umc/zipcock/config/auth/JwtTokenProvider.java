@@ -24,10 +24,12 @@ public class JwtTokenProvider {
     private String secretKey = "umc-zipcock";
 
     // Refresh Token 유효 기간 14일 (ms 단위)
-    private static Long REFRESH_TOKEN_VALID_TIME = 14 * 1440 * 60 * 1000L;
+    private final Long REFRESH_TOKEN_VALID_TIME = 14 * 1440 * 60 * 1000L;
 
     // Access Token 유효 기간 15분
-    private static Long ACCESS_TOKEN_VALID_TIME =  15 * 60 * 1000L;
+    private final Long ACCESS_TOKEN_VALID_TIME =  15 * 60 * 1000L;
+
+    private final CustomUserDetailsService userDetailsService;
 
     // 의존성 주입이 완료된 후에 실행되는 메소드, secretKey를 Base64로 인코딩한다.
     @PostConstruct
