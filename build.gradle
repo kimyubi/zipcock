@@ -31,11 +31,14 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    // API 문서화를 위한 swagger 종속성 추가
+    // API 문서화를 위한 swagger 의존성 추가
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     
-    // 유효성 검사를 위한 validation 종속성 추가
+    // 유효성 검사를 위한 validation 의존성 추가
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // JWT 구현을 위한 jsonwebtoken 의존성 추가
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 }
 
 tasks.named('test') {
