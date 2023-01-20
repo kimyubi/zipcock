@@ -7,6 +7,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -69,5 +72,18 @@ public class JwtTokenProvider {
                 .refreshToken(refreshToken)
                 .accessTokenExpireDate(ACCESS_TOKEN_VALID_TIME)
                 .build();
+    }
+
+    // JWT 토큰을 복호화하여 토큰에 들어있는 사용자 인증 정보 조회
+    public Authentication getAuthentication(String token){
+        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserEmail(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    private String getUserEmail(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody().getSubject();
     }
 }
