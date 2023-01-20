@@ -1,6 +1,7 @@
 package com.umc.zipcock.config.auth;
 
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
+import com.umc.zipcock.service.jwt.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;

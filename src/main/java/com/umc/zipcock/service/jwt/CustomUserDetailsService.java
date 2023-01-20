@@ -1,4 +1,4 @@
-package com.umc.zipcock.config.auth;
+package com.umc.zipcock.service.jwt;
 
 import com.umc.zipcock.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
