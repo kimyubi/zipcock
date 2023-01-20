@@ -1,4 +1,4 @@
-package com.umc.zipcock.config.auth;
+package com.umc.zipcock.model.util;
 
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
 import com.umc.zipcock.service.jwt.CustomUserDetailsService;

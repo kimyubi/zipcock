@@ -1,5 +1,6 @@
 package com.umc.zipcock.config.auth;
 
+import com.umc.zipcock.model.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
