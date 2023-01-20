@@ -1,10 +1,7 @@
 package com.umc.zipcock.config.auth;
 
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -85,5 +84,21 @@ public class JwtTokenProvider {
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody().getSubject();
+    }
+
+    // Request의 Header로부터 토큰 값 조회
+    public String resolveToken(HttpServletRequest request){
+        return request.getHeader("Authorization");
+    }
+
+    // 토큰의 만료 일자를 확인하여 토큰의 유효성을 검증
+    public boolean validateToken(String jwtToken){
+
+        try{
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+            return !claims.getBody().getExpiration().before(new Date());
+        } catch (Exception e){
+            return false;
+        }
     }
 }
