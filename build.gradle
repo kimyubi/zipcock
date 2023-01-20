@@ -31,8 +31,11 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    // swagger
+    // API 문서화를 위한 swagger 종속성 추가
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    
+    // 유효성 검사를 위한 validation 종속성 추가
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named('test') {
