@@ -1,7 +1,5 @@
 package com.umc.zipcock.model.entity.user;
 
-import com.umc.zipcock.model.entity.UserImage;
-import com.umc.zipcock.model.enumClass.user.Role;
 import com.umc.zipcock.model.util.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;

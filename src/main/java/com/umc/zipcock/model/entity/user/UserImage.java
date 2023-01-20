@@ -1,4 +1,4 @@
-package com.umc.zipcock.model.entity;
+package com.umc.zipcock.model.entity.user;
 
 import com.umc.zipcock.model.entity.user.User;
 import com.umc.zipcock.model.util.BaseEntity;
