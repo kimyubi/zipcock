@@ -1,4 +1,4 @@
-package com.umc.zipcock.model.enumClass;
+package com.umc.zipcock.model.enumClass.user;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
