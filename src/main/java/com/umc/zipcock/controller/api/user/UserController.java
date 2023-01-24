@@ -1,12 +1,15 @@
 package com.umc.zipcock.controller.api.user;
 
 import com.umc.zipcock.model.dto.DefaultRes;
+import com.umc.zipcock.model.dto.request.jwt.TokenReqDto;
 import com.umc.zipcock.model.dto.request.user.MemberReqDto;
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
+import com.umc.zipcock.model.entity.user.User;
 import com.umc.zipcock.service.jwt.SecurityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,5 +33,11 @@ public class UserController {
     @PostMapping("/join")
     public DefaultRes join(@Valid @RequestBody MemberReqDto dto){
         return securityService.join(dto);
+    }
+
+    @ApiOperation(value = "토큰 만료 시 토큰 재발급을 위한 API")
+    @PostMapping("/reissue")
+    public DefaultRes reissue(@AuthenticationPrincipal User user, @Valid @RequestBody TokenReqDto dto) {
+        return securityService.reissue(user, dto);
     }
 }

@@ -2,6 +2,7 @@ package com.umc.zipcock.service.jwt;
 
 import com.umc.zipcock.error.UserNotFoundException;
 import com.umc.zipcock.model.dto.DefaultRes;
+import com.umc.zipcock.model.dto.request.jwt.TokenReqDto;
 import com.umc.zipcock.model.dto.request.user.MemberReqDto;
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
 import com.umc.zipcock.model.entity.jwt.RefreshToken;
@@ -13,11 +14,12 @@ import com.umc.zipcock.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.umc.zipcock.error.UserNotFoundException.WRONG_PASSWORD;
@@ -35,6 +37,7 @@ public class SecurityService {
     private final JoinTermRepository joinTermRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // 로그인
     @Transactional
     public TokenResDto login(MemberReqDto dto) {
 
@@ -62,6 +65,7 @@ public class SecurityService {
     }
 
 
+    // 회원가입
     @Transactional(rollbackFor = Exception.class)
     public DefaultRes join(MemberReqDto dto) {
 
@@ -90,4 +94,36 @@ public class SecurityService {
 
         return DefaultRes.response(HttpStatus.OK.value(),"회원 가입에 성공하였습니다.", tokenResDto);
     }
+
+    // 토큰 재발급
+    @Transactional
+    public DefaultRes reissue(User User, TokenReqDto dto) {
+
+        if (!jwtTokenProvider.validateToken(dto.getRefreshToken()))
+            return DefaultRes.response(HttpStatus.OK.value(),"Refresh Token이 만료되었습니다.");
+
+
+        String accessToken = dto.getAccessToken();
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+
+        if(!authentication.getName().equals(User.getEmail()))
+            return DefaultRes.response(HttpStatus.OK.value(),"잘못된 Access Token입니다.");
+
+        List<RefreshToken> refreshTokenList = refreshTokenRepository.findByKey(User.getId());
+
+        RefreshToken refreshToken = refreshTokenList.get(refreshTokenList.size()-1); // 가장 최근에 갱신된 RefreshToken을 꺼낸다.
+
+        // 리프레시 토큰 불일치 에러
+        if (!refreshToken.getToken().equals(dto.getRefreshToken()))
+            return DefaultRes.response(HttpStatus.OK.value(),"잘못된 Refresh Token입니다.");
+
+
+        // AccessToken & RefreshToken 토큰 재발급 후, RefreshToken 저장
+        TokenResDto newToken = jwtTokenProvider.createToken(User.getEmail(), User.getId(), User.getRoleList());
+        RefreshToken updateRefreshToken = refreshToken.updateToken(newToken.getRefreshToken());
+        refreshTokenRepository.save(updateRefreshToken);
+
+        return DefaultRes.response(HttpStatus.OK.value(),"토큰 재발급에 성공하였습니다.", newToken);
+    }
+
 }
