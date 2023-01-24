@@ -129,9 +129,10 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     @Builder
-    public User(String email, String password){
+    public User(String email, String password, String name){
         this.email = email;
         this.password = password;
+        this.name = name;
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {

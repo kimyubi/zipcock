@@ -4,7 +4,8 @@ import com.umc.zipcock.error.UserNotFoundException;
 import com.umc.zipcock.model.dto.DefaultRes;
 import com.umc.zipcock.model.dto.request.jwt.TokenReqDto;
 import com.umc.zipcock.model.dto.request.user.EmailCheckReqDto;
-import com.umc.zipcock.model.dto.request.user.MemberReqDto;
+import com.umc.zipcock.model.dto.request.user.JoinReqDto;
+import com.umc.zipcock.model.dto.request.user.LoginReqDto;
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
 import com.umc.zipcock.model.entity.jwt.RefreshToken;
 import com.umc.zipcock.model.entity.user.User;
@@ -40,7 +41,7 @@ public class SecurityService {
 
     // 로그인
     @Transactional
-    public TokenResDto login(MemberReqDto dto) {
+    public TokenResDto login(LoginReqDto dto) {
 
         // email 확인
         User user = userRepository.findByEmail(dto.getEmail())
@@ -68,7 +69,7 @@ public class SecurityService {
 
     // 회원가입
     @Transactional(rollbackFor = Exception.class)
-    public DefaultRes join(MemberReqDto dto) {
+    public DefaultRes join(JoinReqDto dto) {
 
         Optional<User> existUser = userRepository.findByEmail(dto.getEmail());
 

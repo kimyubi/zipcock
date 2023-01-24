@@ -3,7 +3,8 @@ package com.umc.zipcock.controller.api.user;
 import com.umc.zipcock.model.dto.DefaultRes;
 import com.umc.zipcock.model.dto.request.jwt.TokenReqDto;
 import com.umc.zipcock.model.dto.request.user.EmailCheckReqDto;
-import com.umc.zipcock.model.dto.request.user.MemberReqDto;
+import com.umc.zipcock.model.dto.request.user.JoinReqDto;
+import com.umc.zipcock.model.dto.request.user.LoginReqDto;
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
 import com.umc.zipcock.model.entity.user.User;
 import com.umc.zipcock.service.jwt.SecurityService;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 
 @Api(tags = "로그인 / 회원 가입")
 @RestController
@@ -27,13 +27,13 @@ public class UserController {
 
     @ApiOperation(value = "로그인 API" , notes = "로그인에 성공하면 토큰을 헤더에 넣어서 반환합니다. Authorization 헤더에 AccessToken을 넣어주세요")
     @PostMapping("/login")
-    public TokenResDto login(@Valid @RequestBody MemberReqDto dto) {
+    public TokenResDto login(@Valid @RequestBody LoginReqDto dto) {
         return securityService.login(dto);
     }
 
     @ApiOperation(value = "회원가입 API" , notes = "로그인에 성공하면 토큰을 헤더에 넣어서 반환합니다. Authorization 헤더에 AccessToken을 넣어주세요")
     @PostMapping("/join")
-    public DefaultRes join(@Valid @RequestBody MemberReqDto dto){
+    public DefaultRes join(@Valid @RequestBody JoinReqDto dto){
         return securityService.join(dto);
     }
 
