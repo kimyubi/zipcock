@@ -2,6 +2,7 @@ package com.umc.zipcock.controller.api.user;
 
 import com.umc.zipcock.model.dto.DefaultRes;
 import com.umc.zipcock.model.dto.request.jwt.TokenReqDto;
+import com.umc.zipcock.model.dto.request.user.EmailCheckReqDto;
 import com.umc.zipcock.model.dto.request.user.MemberReqDto;
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
 import com.umc.zipcock.model.entity.user.User;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 
 @Api(tags = "로그인 / 회원 가입")
 @RestController
@@ -39,5 +41,12 @@ public class UserController {
     @PostMapping("/reissue")
     public DefaultRes reissue(@AuthenticationPrincipal User user, @Valid @RequestBody TokenReqDto dto) {
         return securityService.reissue(user, dto);
+    }
+
+
+    @ApiOperation(value = "이메일 중복 확인을 위한 API")
+    @PostMapping("/check-email")
+    public DefaultRes checkEmail(@RequestBody @Valid EmailCheckReqDto dto) {
+        return securityService.checkEmail(dto);
     }
 }

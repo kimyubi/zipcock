@@ -3,6 +3,7 @@ package com.umc.zipcock.service.jwt;
 import com.umc.zipcock.error.UserNotFoundException;
 import com.umc.zipcock.model.dto.DefaultRes;
 import com.umc.zipcock.model.dto.request.jwt.TokenReqDto;
+import com.umc.zipcock.model.dto.request.user.EmailCheckReqDto;
 import com.umc.zipcock.model.dto.request.user.MemberReqDto;
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
 import com.umc.zipcock.model.entity.jwt.RefreshToken;
@@ -124,6 +125,18 @@ public class SecurityService {
         refreshTokenRepository.save(updateRefreshToken);
 
         return DefaultRes.response(HttpStatus.OK.value(),"토큰 재발급에 성공하였습니다.", newToken);
+    }
+
+    // 이메일 중복 확인
+    @Transactional(readOnly = true)
+    public DefaultRes checkEmail(EmailCheckReqDto dto) {
+        Optional<User> existUser = userRepository.findByEmail(dto.getEmail());
+
+        if (existUser.isPresent())
+            return DefaultRes.response(HttpStatus.OK.value(),"이미 사용중인 이메일입니다.");
+        
+        return DefaultRes.response(HttpStatus.OK.value(),"사용 가능한 이메일입니다.");
+
     }
 
 }
