@@ -1,12 +1,15 @@
 package com.umc.zipcock.model.entity.user;
 
+import com.umc.zipcock.model.enumClass.user.Role;
 import com.umc.zipcock.model.util.BaseEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -29,36 +32,51 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "user_id")
     private Long id;
 
+    @Column(nullable = false)
     private String email;
 
+    @Column
     private String name;
 
+    @Column
     private String nickname;
 
-    private boolean gender;
+    @Column
+    private Boolean gender;
 
-    private int age;
+    @Column
+    private Float age;
 
     // 거주지
+    @Column
     private String residence;
 
     // 직업
+    @Column
     private String occupation;
 
     // 키
-    private float height;
+    @Column
+    private Integer height;
 
     // 관심사
+    @Column
     private String interest;
 
     // 취미
+    @Column
     private String hobby;
 
     // 성격
+    @Column
     private String personality;
 
     // 대표 사진
+    @Column
     private String thumbnail;
+
+    @Column(nullable = false)
+    private String password;
 
     // 권한
     // @Enumerated(EnumType.STRING)
@@ -82,7 +100,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return this.password;
     }
 
     @Override
@@ -108,5 +126,20 @@ public class User extends BaseEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Builder
+    public User(String email, String password, String name){
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
+
+    public void encodePassword(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(password);
+    }
+
+    public void addUserRole() {
+        this.roleList.add(Role.MEMBER.getTitle());
     }
 }
