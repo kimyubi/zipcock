@@ -1,5 +1,6 @@
 package com.umc.zipcock.controller;
 
+import com.umc.zipcock.error.UserNotFoundException;
 import com.umc.zipcock.model.dto.DefaultRes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,12 @@ public class ExceptionAdvisor {
 
         return new ResponseEntity<>(DefaultRes.response(HttpStatus.BAD_REQUEST.value(),
                 "유효성 검사 에러", builder.toString()), HttpStatus.BAD_REQUEST);
-        
     }
-}
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<DefaultRes<String>> processUserNotFoundError(UserNotFoundException exception) {
+        return new ResponseEntity<>(DefaultRes.response(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                exception.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    }

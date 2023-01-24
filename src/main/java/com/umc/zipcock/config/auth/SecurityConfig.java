@@ -2,10 +2,15 @@ package com.umc.zipcock.config.auth;
 
 import com.umc.zipcock.model.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 // Spring Security 설정을 위한 클래스
@@ -15,9 +20,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Bean
+    public PasswordEncoder getPasswordEncoder(){
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception{
+        return super.authenticationManagerBean();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .httpBasic().disable()
+                .formLogin().disable()
                 .csrf().disable()
 
                 // JWT 인증 방식을 사용하기 때문에 session이 필요하지 않음.
@@ -31,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // URI별 권한 관리
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
+                .anyRequest().authenticated()
                 .and()
 
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
@@ -39,6 +58,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private static final String[] AUTH_WHITELIST ={
-            "/","/css/**","/images/**","/js/**","/h2-console/**","/v3/api-docs/**","/swagger-ui/**"
+            "/","/css/**","/images/**","/js/**","/h2-console/**","/v3/api-docs/**","/swagger-ui/**", "/login", "/join"
     };
 }
