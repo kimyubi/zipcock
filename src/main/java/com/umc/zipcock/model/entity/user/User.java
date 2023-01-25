@@ -32,7 +32,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String email;
 
     @Column
@@ -75,8 +75,25 @@ public class User extends BaseEntity implements UserDetails {
     @Column
     private String thumbnail;
 
-    @Column(nullable = false)
+    @Column
     private String password;
+
+    @Column
+    private Long kakaoId;
+
+    @Column
+    private String kakaoNickname;
+
+    @Column
+    private String kakaoEmail;
+
+    @Builder
+    public User(Long kakaoId, String kakaoNickname, String kakaoEmail){
+        this.kakaoId = kakaoId;
+        this.kakaoNickname = kakaoNickname;
+        this.kakaoEmail = kakaoEmail;
+    }
+
 
     // 권한
     // @Enumerated(EnumType.STRING)

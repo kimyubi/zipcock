@@ -1,25 +1,33 @@
 package com.umc.zipcock.service.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.zipcock.error.UserNotFoundException;
 import com.umc.zipcock.model.dto.DefaultRes;
 import com.umc.zipcock.model.dto.request.jwt.TokenReqDto;
 import com.umc.zipcock.model.dto.request.user.EmailCheckReqDto;
 import com.umc.zipcock.model.dto.request.user.JoinReqDto;
 import com.umc.zipcock.model.dto.request.user.LoginReqDto;
+import com.umc.zipcock.model.dto.resposne.auth.OauthToken;
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
 import com.umc.zipcock.model.entity.jwt.RefreshToken;
 import com.umc.zipcock.model.entity.user.User;
+import com.umc.zipcock.model.enumClass.user.Role;
 import com.umc.zipcock.model.util.JwtTokenProvider;
+import com.umc.zipcock.model.util.KakaoProfile;
 import com.umc.zipcock.repository.jwt.RefreshTokenRepository;
 import com.umc.zipcock.repository.user.JoinTermRepository;
 import com.umc.zipcock.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -140,4 +148,98 @@ public class SecurityService {
 
     }
 
+    public OauthToken getAccessToken(String code) {
+
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", "60ab03c60f246c42b6397bfd30eb7900");
+        params.add("redirect_uri", "http://localhost:8080/oauth");
+        params.add("code", code);
+        // params.add("client_secret", "{시크릿 키}");
+
+        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
+                new HttpEntity<>(params, headers);
+
+        ResponseEntity<String> accessTokenResponse = rt.exchange(
+                "https://kauth.kakao.com/oauth/token",
+                HttpMethod.POST,
+                kakaoTokenRequest,
+                String.class
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        OauthToken oauthToken = null;
+        try {
+            oauthToken = objectMapper.readValue(accessTokenResponse.getBody(), OauthToken.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return oauthToken;
+    }
+
+    public DefaultRes saveKakaoUser(String token) {
+
+        KakaoProfile profile = findProfile(token);
+
+        User user = userRepository.findByKakaoEmail(profile.getKakao_account().getEmail());
+
+        if(user == null) {
+            user = User.builder()
+                    .kakaoId(profile.getId())
+                    .kakaoEmail(profile.getKakao_account().email)
+                    .kakaoNickname(profile.getKakao_account().getProfile().getNickname())
+                    .build();
+
+            user.getRoleList().add(Role.MEMBER.getTitle());
+            userRepository.save(user);
+        }
+
+        // Access Token과 Refresh Token 새로 발급
+        TokenResDto tokenResDto = jwtTokenProvider.createToken(user.getEmail(), user.getId(), user.getRoleList());
+
+        // Refresh Token 저장
+        RefreshToken refreshToken = RefreshToken.builder()
+                .key(user.getId())
+                .token(tokenResDto.getRefreshToken())
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+        return DefaultRes.response(HttpStatus.OK.value(), "로그인에 성공하였습니다.", tokenResDto);
+
+    }
+
+    private KakaoProfile findProfile(String token) {
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + token);
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        HttpEntity<MultiValueMap<String, String>> kakaoProfileRequest =
+                new HttpEntity<>(headers);
+
+        ResponseEntity<String> kakaoProfileResponse = rt.exchange(
+                "https://kapi.kakao.com/v2/user/me",
+                HttpMethod.POST,
+                kakaoProfileRequest,
+                String.class
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        KakaoProfile kakaoProfile = null;
+        try {
+            kakaoProfile = objectMapper.readValue(kakaoProfileResponse.getBody(), KakaoProfile.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return kakaoProfile;
+    }
 }
