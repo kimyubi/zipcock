@@ -39,11 +39,9 @@ public class UserController {
         OauthToken oauthToken = securityService.getAccessToken(code);
 
         // 발급 받은 accessToken 으로 카카오 회원 정보 DB 저장
-        // User user = securityService.saveKakaoUser(oauthToken.getAccess_token());
+        User user = securityService.saveKakaoUser(oauthToken.getAccess_token());
 
-        // return DefaultRes.response(HttpStatus.OK.value(), "로그인에 성공하였습니다.", user);
-
-        return DefaultRes.response(HttpStatus.OK.value(),"액세스 토큰 발급 성공", oauthToken);
+        return DefaultRes.response(HttpStatus.OK.value(), "로그인에 성공하였습니다.", user);
     }
 
     @ApiOperation(value = "회원가입 API" , notes = "로그인에 성공하면 토큰을 헤더에 넣어서 반환합니다. Authorization 헤더에 AccessToken을 넣어주세요")
