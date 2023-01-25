@@ -12,7 +12,9 @@ import com.umc.zipcock.model.dto.resposne.auth.OauthToken;
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
 import com.umc.zipcock.model.entity.jwt.RefreshToken;
 import com.umc.zipcock.model.entity.user.User;
+import com.umc.zipcock.model.enumClass.user.Role;
 import com.umc.zipcock.model.util.JwtTokenProvider;
+import com.umc.zipcock.model.util.KakaoProfile;
 import com.umc.zipcock.repository.jwt.RefreshTokenRepository;
 import com.umc.zipcock.repository.user.JoinTermRepository;
 import com.umc.zipcock.repository.user.UserRepository;
@@ -181,7 +183,51 @@ public class SecurityService {
         return oauthToken;
     }
 
-    public User saveKakaoUser(String access_token) {
-        return null;
+    public User saveKakaoUser(String token) {
+
+        KakaoProfile profile = findProfile(token);
+
+        User user = userRepository.findByKakaoEmail(profile.getKakao_account().getEmail());
+
+        if(user == null) {
+            user = User.builder()
+                    .kakaoId(profile.getId())
+                    .kakaoEmail(profile.getKakao_account().email)
+                    .kakaoNickname(profile.getKakao_account().getProfile().getNickname())
+                    .build();
+
+            user.getRoleList().add(Role.MEMBER.getTitle());
+            userRepository.save(user);
+        }
+
+        return user;
+    }
+
+    private KakaoProfile findProfile(String token) {
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + token);
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        HttpEntity<MultiValueMap<String, String>> kakaoProfileRequest =
+                new HttpEntity<>(headers);
+
+        ResponseEntity<String> kakaoProfileResponse = rt.exchange(
+                "https://kapi.kakao.com/v2/user/me",
+                HttpMethod.POST,
+                kakaoProfileRequest,
+                String.class
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        KakaoProfile kakaoProfile = null;
+        try {
+            kakaoProfile = objectMapper.readValue(kakaoProfileResponse.getBody(), KakaoProfile.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return kakaoProfile;
     }
 }
