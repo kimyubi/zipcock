@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,15 +34,15 @@ public class UserController {
 
     @ApiOperation(value = "카카오 로그인 API")
     @GetMapping("/oauth/token")
-    public DefaultRes kakaoLogin(@RequestParam String code) {
+    public ResponseEntity<DefaultRes> kakaoLogin(@RequestParam String code) {
 
         // 넘어온 인가 코드를 통해 access Token 발급
         OauthToken oauthToken = securityService.getAccessToken(code);
 
-        // 발급 받은 accessToken 으로 카카오 회원 정보 DB 저장
-        User user = securityService.saveKakaoUser(oauthToken.getAccess_token());
+        // 발급 받은 accessToken 으로 카카오 회원 정보 DB 저장 후 우리 서비스의 Access Token, Refresh Token 발급
+        DefaultRes res = securityService.saveKakaoUser(oauthToken.getAccess_token());
 
-        return DefaultRes.response(HttpStatus.OK.value(), "로그인에 성공하였습니다.", user);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @ApiOperation(value = "회원가입 API" , notes = "로그인에 성공하면 토큰을 헤더에 넣어서 반환합니다. Authorization 헤더에 AccessToken을 넣어주세요")

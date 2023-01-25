@@ -183,7 +183,7 @@ public class SecurityService {
         return oauthToken;
     }
 
-    public User saveKakaoUser(String token) {
+    public DefaultRes saveKakaoUser(String token) {
 
         KakaoProfile profile = findProfile(token);
 
@@ -200,7 +200,19 @@ public class SecurityService {
             userRepository.save(user);
         }
 
-        return user;
+        // Access Token과 Refresh Token 새로 발급
+        TokenResDto tokenResDto = jwtTokenProvider.createToken(user.getEmail(), user.getId(), user.getRoleList());
+
+        // Refresh Token 저장
+        RefreshToken refreshToken = RefreshToken.builder()
+                .key(user.getId())
+                .token(tokenResDto.getRefreshToken())
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+        return DefaultRes.response(HttpStatus.OK.value(), "로그인에 성공하였습니다.", tokenResDto);
+
     }
 
     private KakaoProfile findProfile(String token) {
