@@ -1,11 +1,14 @@
 package com.umc.zipcock.service.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.zipcock.error.UserNotFoundException;
 import com.umc.zipcock.model.dto.DefaultRes;
 import com.umc.zipcock.model.dto.request.jwt.TokenReqDto;
 import com.umc.zipcock.model.dto.request.user.EmailCheckReqDto;
 import com.umc.zipcock.model.dto.request.user.JoinReqDto;
 import com.umc.zipcock.model.dto.request.user.LoginReqDto;
+import com.umc.zipcock.model.dto.resposne.auth.OauthToken;
 import com.umc.zipcock.model.dto.resposne.jwt.TokenResDto;
 import com.umc.zipcock.model.entity.jwt.RefreshToken;
 import com.umc.zipcock.model.entity.user.User;
@@ -15,11 +18,14 @@ import com.umc.zipcock.repository.user.JoinTermRepository;
 import com.umc.zipcock.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -140,4 +146,42 @@ public class SecurityService {
 
     }
 
+    public OauthToken getAccessToken(String code) {
+
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", "60ab03c60f246c42b6397bfd30eb7900");
+        params.add("redirect_uri", "http://localhost:8080/oauth");
+        params.add("code", code);
+        // params.add("client_secret", "{시크릿 키}");
+
+        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
+                new HttpEntity<>(params, headers);
+
+        ResponseEntity<String> accessTokenResponse = rt.exchange(
+                "https://kauth.kakao.com/oauth/token",
+                HttpMethod.POST,
+                kakaoTokenRequest,
+                String.class
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        OauthToken oauthToken = null;
+        try {
+            oauthToken = objectMapper.readValue(accessTokenResponse.getBody(), OauthToken.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return oauthToken;
+    }
+
+    public User saveKakaoUser(String access_token) {
+        return null;
+    }
 }
