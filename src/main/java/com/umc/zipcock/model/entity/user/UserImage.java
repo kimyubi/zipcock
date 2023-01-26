@@ -1,5 +1,6 @@
 package com.umc.zipcock.model.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.umc.zipcock.model.entity.user.User;
 import com.umc.zipcock.model.util.BaseEntity;
 import lombok.AccessLevel;
@@ -16,10 +17,12 @@ public class UserImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "image_id")
     private Long id;
 
     private String imageUrl;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

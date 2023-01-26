@@ -62,4 +62,5 @@ public class UserController {
     public DefaultRes checkEmail(@RequestBody @Valid EmailCheckReqDto dto) {
         return securityService.checkEmail(dto);
     }
+
 }
