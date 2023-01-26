@@ -73,8 +73,9 @@ public class User extends BaseEntity implements UserDetails {
     private String thumbnail;
 
     // 연애 가치관
-//    @Column
-//    private String values;
+    // values가 예약어라 viewpoint라는 이름 사용
+    @Column
+    private String viewpoint;
 
     @Column
     private String password;
@@ -161,7 +162,7 @@ public class User extends BaseEntity implements UserDetails {
         this.roleList.add(Role.MEMBER.getTitle());
     }
 
-    public User createProfile(ProfileReqDto dto, List<UserImage> userImageList) {
+    public User createProfile(ProfileReqDto dto, List<UserImage> userImageList, String thumbnail) {
         this.userImageList = userImageList;
         this.nickname = dto.getNickname();
         this.gender = dto.getGender();
@@ -172,6 +173,9 @@ public class User extends BaseEntity implements UserDetails {
         this.personality = dto.getPersonality();
         this.interest = dto.getInterest();
         this.hobby = dto.getHobby();
+        this.viewpoint = dto.getViewPoint();
+
+        this.thumbnail = thumbnail;
 
         return this;
     }
