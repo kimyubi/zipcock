@@ -1,11 +1,9 @@
 package com.umc.zipcock.model.entity.user;
 
+import com.umc.zipcock.model.dto.request.user.ProfileReqDto;
 import com.umc.zipcock.model.enumClass.user.Role;
 import com.umc.zipcock.model.util.BaseEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
-
 // local db로 사용 중인 h2 database에서 'user'가 예약어로 사용되기 때문
 // 배포 단계에서 @Table 삭제 예정
 @Table(name = "users")
@@ -45,7 +42,7 @@ public class User extends BaseEntity implements UserDetails {
     private Boolean gender;
 
     @Column
-    private Float age;
+    private Integer age;
 
     // 거주지
     @Column
@@ -75,6 +72,10 @@ public class User extends BaseEntity implements UserDetails {
     @Column
     private String thumbnail;
 
+    // 연애 가치관
+//    @Column
+//    private String values;
+
     @Column
     private String password;
 
@@ -87,13 +88,20 @@ public class User extends BaseEntity implements UserDetails {
     @Column
     private String kakaoEmail;
 
+    // 일반 로그인시 사용
     @Builder
-    public User(Long kakaoId, String kakaoNickname, String kakaoEmail){
+    public User(String email, String password, String name){
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
+
+    // 카카오 로그인시 사용
+    public User(Long kakaoId, String kakaoNickname, String kakaoEmail) {
         this.kakaoId = kakaoId;
         this.kakaoNickname = kakaoNickname;
         this.kakaoEmail = kakaoEmail;
     }
-
 
     // 권한
     // @Enumerated(EnumType.STRING)
@@ -145,18 +153,26 @@ public class User extends BaseEntity implements UserDetails {
         return true;
     }
 
-    @Builder
-    public User(String email, String password, String name){
-        this.email = email;
-        this.password = password;
-        this.name = name;
-    }
-
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);
     }
 
     public void addUserRole() {
         this.roleList.add(Role.MEMBER.getTitle());
+    }
+
+    public User createProfile(ProfileReqDto dto, List<UserImage> userImageList) {
+        this.userImageList = userImageList;
+        this.nickname = dto.getNickname();
+        this.gender = dto.getGender();
+        this.age = dto.getAge();
+        this.height = dto.getHeight();
+        this.residence = dto.getResidence();
+        this.occupation = dto.getOccupation();
+        this.personality = dto.getPersonality();
+        this.interest = dto.getInterest();
+        this.hobby = dto.getHobby();
+
+        return this;
     }
 }

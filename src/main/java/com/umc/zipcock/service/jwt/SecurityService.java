@@ -190,11 +190,7 @@ public class SecurityService {
         User user = userRepository.findByKakaoEmail(profile.getKakao_account().getEmail());
 
         if(user == null) {
-            user = User.builder()
-                    .kakaoId(profile.getId())
-                    .kakaoEmail(profile.getKakao_account().email)
-                    .kakaoNickname(profile.getKakao_account().getProfile().getNickname())
-                    .build();
+            user = new User(profile.getId(), profile.getKakao_account().email, profile.getKakao_account().getProfile().getNickname());
 
             user.getRoleList().add(Role.MEMBER.getTitle());
             userRepository.save(user);
