@@ -191,7 +191,6 @@ public class SecurityService {
 
         if(user == null) {
             user = new User(profile.getId(), profile.getKakao_account().email, profile.getKakao_account().getProfile().getNickname());
-
             user.getRoleList().add(Role.MEMBER.getTitle());
             userRepository.save(user);
         }

@@ -40,7 +40,7 @@ public class ProfileService {
         if(savedMember == null)
             return DefaultRes.response(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버의 에러로 프로필 작성에 실패하였습니다.");
 
-        return DefaultRes.response(HttpStatus.OK.value(), "프로필 작성에 성공하였습니다.", user);
+        return DefaultRes.response(HttpStatus.OK.value(), "프로필 작성에 성공하였습니다.");
 
     }
 }

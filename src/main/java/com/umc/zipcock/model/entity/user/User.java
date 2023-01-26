@@ -98,10 +98,10 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     // 카카오 로그인시 사용
-    public User(Long kakaoId, String kakaoNickname, String kakaoEmail) {
+    public User(Long kakaoId, String kakaoEmail, String kakaoNickname) {
         this.kakaoId = kakaoId;
-        this.kakaoNickname = kakaoNickname;
         this.kakaoEmail = kakaoEmail;
+        this.kakaoNickname = kakaoNickname;
     }
 
     // 권한
