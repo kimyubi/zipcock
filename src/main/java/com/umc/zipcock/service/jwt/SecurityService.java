@@ -88,7 +88,7 @@ public class SecurityService {
         User member = userRepository.save(user);
 
         member.encodePassword(passwordEncoder);
-        member.addUserRole();
+//        member.addUserRole();
 
         if(member.getId() == null)
             return DefaultRes.response(HttpStatus.OK.value(),"서버의 오류로 회원가입에 실패하였습니다.");
@@ -191,7 +191,7 @@ public class SecurityService {
 
         if(user == null) {
             user = new User(profile.getId(), profile.getKakao_account().email, profile.getKakao_account().getProfile().getNickname());
-            user.getRoleList().add(Role.MEMBER.getTitle());
+//            user.addUserRole();
             userRepository.save(user);
         }
 

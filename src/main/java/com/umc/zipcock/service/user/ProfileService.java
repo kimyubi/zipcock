@@ -36,6 +36,7 @@ public class ProfileService {
         }
 
         User member = user.createProfile(dto, userImageList, thumbnail);
+        member.addUserRole();
         User savedMember = userRepository.save(member);
 
         if(savedMember == null)
