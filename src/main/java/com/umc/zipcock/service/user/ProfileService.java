@@ -2,6 +2,7 @@ package com.umc.zipcock.service.user;
 
 import com.umc.zipcock.model.dto.DefaultRes;
 import com.umc.zipcock.model.dto.request.user.ProfileReqDto;
+import com.umc.zipcock.model.dto.resposne.profile.TodayProfileResDto;
 import com.umc.zipcock.model.entity.user.User;
 import com.umc.zipcock.model.entity.user.UserImage;
 import com.umc.zipcock.repository.user.UserImageRepository;
@@ -42,5 +43,22 @@ public class ProfileService {
 
         return DefaultRes.response(HttpStatus.OK.value(), "프로필 작성에 성공하였습니다.");
 
+    }
+
+    public DefaultRes retrieveTodayProfile(User currentUser) {
+        // 본인을 제외하고, 최근 회원가입을 한 순으로 10명의 프로필을 가져온다.
+        List<User> userList =  userRepository.getTodayProfile(currentUser);
+
+        if (userList.isEmpty())
+            return DefaultRes.response(HttpStatus.OK.value(),"회원이 없습니다.");
+
+        List<TodayProfileResDto> todayProfileList = new LinkedList<>();
+
+        for(User user: userList){
+            TodayProfileResDto profile = TodayProfileResDto.createProfile(user);
+            todayProfileList.add(profile);
+        }
+
+        return DefaultRes.response(HttpStatus.OK.value(),"홈(오늘의 소개) API 응답에 성공하였습니다.", todayProfileList);
     }
 }
