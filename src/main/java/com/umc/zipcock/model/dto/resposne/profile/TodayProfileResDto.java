@@ -15,11 +15,14 @@ public class TodayProfileResDto {
     private String nickname;
     private Integer age;
     private Integer height;
-    private String city;
+    private String city;            // 시 (행정 구역 단위)
+    private String district;        // 구 (행정 구역 단위)
     private LocalDateTime createdDate;
 
     public static TodayProfileResDto createProfile(User user) {
         String cityFromResidence = Arrays.stream(user.getResidence().split(",")).collect(Collectors.toList()).get(0);
+        String districtFromResidence = Arrays.stream(user.getResidence().split(",")).collect(Collectors.toList()).get(1);
+
 
         return TodayProfileResDto.builder()
                 .thumbnail(user.getThumbnail())
@@ -27,6 +30,7 @@ public class TodayProfileResDto {
                 .age(user.getAge())
                 .height(user.getHeight())
                 .city(cityFromResidence)
+                .district(districtFromResidence)
                 .createdDate(user.getCreatedDate())
                 .build();
 

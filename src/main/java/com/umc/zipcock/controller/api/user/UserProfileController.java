@@ -37,5 +37,12 @@ public class UserProfileController {
         return new ResponseEntity<>(profileService.retrieveTodayProfile(user), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "홈(오늘의 소개) - [근처에 사는] 기능 API", notes = "거주지가 일치하는 회원들을 최대 10명으로 보여줍니다.\n" +
+            "만약 거주지가 일치하는 사람이 없다면 같은 '시' 혹은 '구'에 거주하는 회원을 보여줍니다")
+    @GetMapping("/around-profile")
+    public ResponseEntity<DefaultRes> retrieveAroundProfile(@AuthenticationPrincipal User user) {
+        return new ResponseEntity<>(profileService.retrieveAroundProfile(user), HttpStatus.OK);
+    }
+
 
 }

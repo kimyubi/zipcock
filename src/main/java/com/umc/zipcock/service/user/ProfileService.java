@@ -47,8 +47,25 @@ public class ProfileService {
     }
 
     public DefaultRes retrieveTodayProfile(User currentUser) {
-        // 본인을 제외하고, 최근 회원가입을 한 순으로 10명의 프로필을 가져온다.
+        // 본인을 제외하고, 최근 회원가입을 한 순으로 최대 10명의 프로필을 가져온다.
         List<User> userList =  userRepository.getTodayProfile(currentUser);
+
+        if (userList.isEmpty())
+            return DefaultRes.response(HttpStatus.OK.value(),"회원이 없습니다.");
+
+        List<TodayProfileResDto> todayProfileList = new LinkedList<>();
+
+        for(User user: userList){
+            TodayProfileResDto profile = TodayProfileResDto.createProfile(user);
+            todayProfileList.add(profile);
+        }
+
+        return DefaultRes.response(HttpStatus.OK.value(),"홈(오늘의 소개) API 응답에 성공하였습니다.", todayProfileList);
+    }
+
+    public DefaultRes retrieveAroundProfile(User currentUser) {
+        // 본인을 제외하고, 최근 회원가입을 한 순으로 최대 10명의 프로필을 가져온다.
+        List<User> userList =  userRepository.getAroundProfile(currentUser);
 
         if (userList.isEmpty())
             return DefaultRes.response(HttpStatus.OK.value(),"회원이 없습니다.");
