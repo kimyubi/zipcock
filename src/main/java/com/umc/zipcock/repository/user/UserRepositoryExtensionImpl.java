@@ -4,7 +4,6 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPQLQuery;
-import com.umc.zipcock.model.dto.resposne.profile.TodayProfileResDto;
 import com.umc.zipcock.model.entity.user.QUser;
 import com.umc.zipcock.model.entity.user.User;
 import com.umc.zipcock.model.enumClass.user.Role;
