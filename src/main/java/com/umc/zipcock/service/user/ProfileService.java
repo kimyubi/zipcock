@@ -2,6 +2,7 @@ package com.umc.zipcock.service.user;
 
 import com.umc.zipcock.model.dto.DefaultRes;
 import com.umc.zipcock.model.dto.request.user.ProfileReqDto;
+import com.umc.zipcock.model.dto.resposne.profile.ProfileDetailResDto;
 import com.umc.zipcock.model.dto.resposne.profile.ProfileResDto;
 import com.umc.zipcock.model.entity.user.User;
 import com.umc.zipcock.model.entity.user.UserImage;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -78,5 +80,19 @@ public class ProfileService {
         }
 
         return DefaultRes.response(HttpStatus.OK.value(),"홈(오늘의 소개) API 응답에 성공하였습니다.", ProfileList);
+    }
+
+    // 프로필 세부 보기 기능
+    public DefaultRes retrieveDetailProfile(User currentUser) {
+        Optional<User> user = userRepository.findById(currentUser.getId());
+        User member = null;
+
+        if(user.isPresent())
+             member = user.get();
+
+        ProfileDetailResDto detailProfile = new ProfileDetailResDto();
+        detailProfile.createProfile(member);
+
+        return DefaultRes.response(HttpStatus.OK.value(),"프로필 세부 보기 기능 API 응답에 성공하였습니다.", detailProfile);
     }
 }
