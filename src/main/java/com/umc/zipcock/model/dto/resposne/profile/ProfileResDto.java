@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @Builder @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TodayProfileResDto {
+public class ProfileResDto {
     private String thumbnail;       // 회원 프로필 사진
     private String nickname;
     private Integer age;
@@ -19,12 +19,12 @@ public class TodayProfileResDto {
     private String district;        // 구 (행정 구역 단위)
     private LocalDateTime createdDate;
 
-    public static TodayProfileResDto createProfile(User user) {
+    public static ProfileResDto createProfile(User user) {
         String cityFromResidence = Arrays.stream(user.getResidence().split(",")).collect(Collectors.toList()).get(0);
         String districtFromResidence = Arrays.stream(user.getResidence().split(",")).collect(Collectors.toList()).get(1);
 
 
-        return TodayProfileResDto.builder()
+        return ProfileResDto.builder()
                 .thumbnail(user.getThumbnail())
                 .nickname(user.getNickname())
                 .age(user.getAge())

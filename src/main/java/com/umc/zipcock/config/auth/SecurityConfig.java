@@ -1,5 +1,6 @@
 package com.umc.zipcock.config.auth;
 
+import com.umc.zipcock.model.enumClass.user.Role;
 import com.umc.zipcock.model.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // URI별 권한 관리
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
+                .antMatchers("/api/user/**").hasAuthority(Role.MEMBER.getTitle())
                 .anyRequest().authenticated()
                 .and()
 

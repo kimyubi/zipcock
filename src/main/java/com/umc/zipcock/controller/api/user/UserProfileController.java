@@ -14,12 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
 @Api(tags = "프로필")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserProfileController {
 
@@ -44,5 +43,10 @@ public class UserProfileController {
         return new ResponseEntity<>(profileService.retrieveAroundProfile(user), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "프로필 세부 보기 기능 API", notes = "최근 회원가입을 한 순으로 최대 10명의 상대의 프로필을 보여줍니다.")
+    @GetMapping("/detail-profile")
+    public ResponseEntity<DefaultRes> retrieveDetailProfile(@AuthenticationPrincipal User user) {
+        return new ResponseEntity<>(profileService.retrieveDetailProfile(user), HttpStatus.OK);
+    }
 
 }
