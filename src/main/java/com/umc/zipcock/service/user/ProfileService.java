@@ -6,6 +6,7 @@ import com.umc.zipcock.model.dto.resposne.profile.ProfileDetailResDto;
 import com.umc.zipcock.model.dto.resposne.profile.ProfileResDto;
 import com.umc.zipcock.model.entity.user.User;
 import com.umc.zipcock.model.entity.user.UserImage;
+import com.umc.zipcock.model.enumClass.user.Role;
 import com.umc.zipcock.repository.user.UserImageRepository;
 import com.umc.zipcock.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -83,12 +84,17 @@ public class ProfileService {
     }
 
     // 프로필 세부 보기 기능
-    public DefaultRes retrieveDetailProfile(User currentUser) {
-        Optional<User> user = userRepository.findById(currentUser.getId());
+    public DefaultRes retrieveDetailProfile(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
         User member = null;
 
-        if(user.isPresent())
-             member = user.get();
+        if(user.isEmpty())
+            return DefaultRes.response(HttpStatus.OK.value(),userId + "에 해당하는 회원이 존재하지 않습니다.");
+
+        member = user.get();
+
+        if(!member.getRoleList().contains(Role.MEMBER.getTitle()))
+            return DefaultRes.response(HttpStatus.OK.value(),userId + "에 해당하는 회원은 프로필을 작성하지 않은 회원입니다.");
 
         ProfileDetailResDto detailProfile = new ProfileDetailResDto();
         detailProfile.createProfile(member);

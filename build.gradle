@@ -54,6 +54,11 @@ dependencies {
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
     implementation "com.querydsl:querydsl-core:${queryDslVersion}"
+
+    // 소켓 사용을 위한 websocket 의존성 추가
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    implementation 'mysql:mysql-connector-java'
 }
 
 tasks.named('test') {
